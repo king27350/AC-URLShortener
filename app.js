@@ -1,6 +1,11 @@
 const express = require('express')
+const exphbs = require('express-handlebars')
 const app = express()
 const mongoose = require('mongoose')
+
+//handlebars setting
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
+app.set('view engine', 'handlebars')
 
 //basic mongoose setting
 mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -19,7 +24,7 @@ const Shortener = require('./models/shortener')
 
 //routes
 app.get('/', (req, res) => {
-  res.send('indexpage')
+  res.render('index')
 })
 
 app.listen('3000', () => {
