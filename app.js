@@ -2,13 +2,15 @@ const express = require('express')
 const exphbs = require('express-handlebars')
 const app = express()
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
+const bcrypt = require('bcryptjs')
 
 //handlebars setting
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 //basic mongoose setting
-mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb://localhost/shortener', { useNewUrlParser: true, useUnifiedTopology: true })
 
 const db = mongoose.connection
 db.on('error', () => {
@@ -20,7 +22,8 @@ db.once('open', () => {
 
 //import shortener model
 const Shortener = require('./models/shortener')
-
+// body-parser setting
+app.use(bodyParser.urlencoded({ extended: true }))
 
 //routes
 app.get('/', (req, res) => {
@@ -28,7 +31,28 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-  res.send('test')
+
+  //check input URL if exist or not , if ! and then hash
+  //把輸入的網址 加密
+  // output the answer 
+  // else true exist redirect '/' 
+  // give it a hint to user
+  Shortener.findOne({ originalURL: req.body.originalURL }).then(url => {
+    if (url) {
+      console.log('url exist')
+    } else {
+      const newShortener = new Shortener({
+        originalURL: req.body.originalURL,
+        hashURL: bcrypt.hashSync(`${req.body.originalURL}`, 10).slice(-5)
+      })
+
+      newShortener.save()
+        .then(url => {
+          console.log(newShortener.hashURL)
+          res.redirect('/')
+        }).catch(err => console.log(err))
+    }
+  })
 })
 
 app.listen('3000', () => {
