@@ -27,6 +27,10 @@ app.get('/', (req, res) => {
   res.render('index')
 })
 
+app.post('/', (req, res) => {
+  res.send('test')
+})
+
 app.listen('3000', () => {
   console.log('App is running on port 3000')
 })
