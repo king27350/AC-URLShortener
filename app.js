@@ -47,7 +47,7 @@ app.post('/', (req, res) => {
         .then(url => {
           const hashURL = 'localhost:3000/' + newShortener.hashURL
           res.render('new', { url, hashURL })
-        }).catch(err => console.log(err))
+        }).catch(error => console.log(error))
     }
   })
 })
@@ -58,7 +58,12 @@ app.get('/:shortURL', (req, res) => {
     hashURL: shortURL
   }, (err, url) => {
     if (err) console.log(err)
-    return res.redirect(url.originalURL)
+    if (url) {
+      return res.redirect(url.originalURL)
+    } else {
+      res.redirect('/')
+    }
+
   })
 })
 
