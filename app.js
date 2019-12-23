@@ -35,11 +35,12 @@ app.post('/', (req, res) => {
 
   Shortener.findOne({ originalURL: req.body.originalURL }).then(url => {
     if (url) {
-      console.log('url exist')
+      const hashURL = 'localhost:3000/' + url.hashURL
+      return render('new', { url, hashURL })
     } else {
       const newShortener = new Shortener({
         originalURL: req.body.originalURL,
-        hashURL: bcrypt.hashSync(`${req.body.originalURL}`, 10).slice(-5)
+        hashURL: bcrypt.hashSync(`${req.body.originalURL}`, 10).replace(/\//g, "kathy").slice(-5)
       })
 
       newShortener.save()
