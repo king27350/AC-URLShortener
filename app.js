@@ -22,7 +22,8 @@ db.once('open', () => {
 
 //import shortener model
 const Shortener = require('./models/shortener')
-// body-parser setting
+
+app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }))
 
 //routes
@@ -48,8 +49,9 @@ app.post('/', (req, res) => {
 
       newShortener.save()
         .then(url => {
+          const hashURL = newShortener.hashURL
           console.log(newShortener.hashURL)
-          res.redirect('/')
+          res.render('new', { hashURL })
         }).catch(err => console.log(err))
     }
   })
