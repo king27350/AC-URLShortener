@@ -35,7 +35,7 @@ app.post('/', (req, res) => {
 
   Shortener.findOne({ originalURL: req.body.originalURL }).exec(url => {
     if (url) {
-      const hashURL = 'localhost:3000/' + url.hashURL
+      const hashURL = 'https://evening-ocean-89417.herokuapp.com/' + url.hashURL
       return render('new', { url, hashURL })
     } else {
       const newShortener = new Shortener({
@@ -45,7 +45,7 @@ app.post('/', (req, res) => {
 
       newShortener.save()
         .then(url => {
-          const hashURL = 'localhost:3000/' + newShortener.hashURL
+          const hashURL = 'https://evening-ocean-89417.herokuapp.com/' + newShortener.hashURL
           res.render('new', { url, hashURL })
         }).catch(error => console.log(error))
     }
