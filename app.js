@@ -10,7 +10,7 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 
 //basic mongoose setting
-mongoose.connect('mongodb://localhost/shortener', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.PORT || 'mongodb://localhost/shortener', { useNewUrlParser: true, useUnifiedTopology: true })
 
 const db = mongoose.connection
 db.on('error', () => {
@@ -67,6 +67,6 @@ app.get('/:shortURL', (req, res) => {
   })
 })
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('App is running on port 3000')
 })
