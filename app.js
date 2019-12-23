@@ -33,11 +33,6 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
 
-  //check input URL if exist or not , if ! and then hash
-  //把輸入的網址 加密
-  // output the answer 
-  // else true exist redirect '/' 
-  // give it a hint to user
   Shortener.findOne({ originalURL: req.body.originalURL }).then(url => {
     if (url) {
       console.log('url exist')
@@ -49,14 +44,23 @@ app.post('/', (req, res) => {
 
       newShortener.save()
         .then(url => {
-          const hashURL = newShortener.hashURL
-          console.log(newShortener.hashURL)
-          res.render('new', { hashURL })
+          const hashURL = 'localhost:3000/' + newShortener.hashURL
+          res.render('new', { url, hashURL })
         }).catch(err => console.log(err))
     }
   })
 })
 
-app.listen('3000', () => {
+app.get('/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL
+  Shortener.findOne({
+    hashURL: shortURL
+  }, (err, url) => {
+    if (err) throw err
+    return res.redirect(url.originalURL)
+  })
+})
+
+app.listen(3000, () => {
   console.log('App is running on port 3000')
 })
