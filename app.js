@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 
 app.post('/', (req, res) => {
 
-  Shortener.findOne({ originalURL: req.body.originalURL }).then(url => {
+  Shortener.findOne({ originalURL: req.body.originalURL }).exec(url => {
     if (url) {
       const hashURL = 'localhost:3000/' + url.hashURL
       return render('new', { url, hashURL })
@@ -57,7 +57,7 @@ app.get('/:shortURL', (req, res) => {
   Shortener.findOne({
     hashURL: shortURL
   }, (err, url) => {
-    if (err) throw err
+    if (err) console.log(err)
     return res.redirect(url.originalURL)
   })
 })
