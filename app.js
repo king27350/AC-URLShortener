@@ -3,7 +3,6 @@ const exphbs = require('express-handlebars')
 const app = express()
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-const bcrypt = require('bcryptjs')
 
 //handlebars setting
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
@@ -38,9 +37,12 @@ app.post('/', (req, res) => {
       const hashURL = 'https://evening-ocean-89417.herokuapp.com/' + url.hashURL
       return render('new', { url, hashURL })
     } else {
+      const hashURL = generateHashURL()
+      check(hashURL)
+
       const newShortener = new Shortener({
         originalURL: req.body.originalURL,
-        hashURL: bcrypt.hashSync(`${req.body.originalURL}`, 10).replace(/\//g, "kathy").slice(-5)
+        hashURL: hashURL
       })
 
       newShortener.save()
@@ -70,3 +72,41 @@ app.get('/:shortURL', (req, res) => {
 app.listen(process.env.PORT || 3000, () => {
   console.log('App is running on port 3000')
 })
+
+
+function generateHashURL() {
+  const char = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'z', 'y', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+  const num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+  const combination = getRandom(1, 4)
+  const arr = []
+
+
+  for (let i = 0; i < combination; i++) {
+    const index = Math.floor(Math.random() * num.length)
+    arr.push(num[index])
+  }
+  for (let j = 0; j < 5 - combination; j++) {
+    const index = Math.floor(Math.random() * char.length)
+    arr.push(char[index])
+  }
+
+  function randomSort(a, b) {
+    return Math.random() > 0.5 ? -1 : 1
+  }
+
+  function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min
+  }
+
+  return arr.sort(randomSort).join('')
+
+}
+
+function check(hashURL) {
+  Shortener.findOne({ hashURL: hashURL }, (err, one) => {
+    if (err) console.log(err)
+    if (one) {
+      return check(generateHashURL())
+    }
+  })
+}
